@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Journal Entry Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --or:#E85D04; --or-d:#BF4A00; --or-p:#FFF3EB;
+  --or-m:#FFD9B8; --or-b:#FFE8D0; --bdr:#F0C8A0;
+  --text:#1C0A00; --muted:#7A4520; --shd:rgba(232,93,4,.13);
+  --green:#146B38; --red2:#B83A00;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  min-height:100vh;
+  background:var(--or);
+  background-image:radial-gradient(ellipse at 5% 5%,#FF8030 0%,transparent 45%),radial-gradient(ellipse at 95% 95%,#BF4A00 0%,transparent 45%);
+  font-family:'DM Sans',sans-serif;
+  display:flex;flex-direction:column;align-items:center;
+  padding-bottom:80px;
+}
+
+/* HEADER */
+header{
+  width:100%;padding:18px 28px;
+  background:rgba(255,255,255,.12);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;
+}
+header h1{font-family:'Playfair Display',serif;color:#fff;font-size:1.6rem;}
+header p{color:rgba(255,255,255,.72);font-size:.8rem;margin-top:2px;}
+.hbadge{
+  background:rgba(255,255,255,.2);color:#fff;
+  font-size:.65rem;font-weight:600;letter-spacing:.1em;
+  padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.3);
+  text-transform:uppercase;white-space:nowrap;
+}
+
+.wrap{width:100%;max-width:1180px;padding:0 16px;display:flex;flex-direction:column;gap:20px;}
+
+/* NARRATION CARD */
+.ncard{background:#fff;border-radius:14px;box-shadow:0 14px 44px var(--shd);overflow:hidden;}
+.ntop{background:linear-gradient(120deg,var(--or-p),#fff);padding:20px 24px 14px;border-bottom:1px solid var(--bdr);}
+.ntitle{
+  font-family:'Playfair Display',serif;font-size:.98rem;color:var(--or-d);
+  display:flex;align-items:center;gap:7px;margin-bottom:11px;
+}
+.ntitle::before{content:'';width:3px;height:18px;background:var(--or);border-radius:2px;display:block;}
+.nrow{position:relative;}
+#narrBox{
+  width:100%;min-height:66px;
+  background:#FAFAFA;border:2px solid var(--bdr);border-radius:10px;
+  padding:12px 50px 12px 14px;
+  font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--text);
+  resize:none;outline:none;line-height:1.6;transition:.2s;
+}
+#narrBox:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(232,93,4,.09);background:#fff;}
+#narrBox::placeholder{color:#C4956A;font-style:italic;}
+#goBtn{
+  position:absolute;right:10px;bottom:10px;
+  background:var(--or);color:#fff;border:none;border-radius:8px;
+  width:36px;height:36px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  box-shadow:0 3px 9px rgba(232,93,4,.38);transition:.15s;
+}
+#goBtn:hover{background:var(--or-d);transform:scale(1.08);}
+.meta{padding:11px 24px 16px;background:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.mlbl{font-size:.75rem;color:var(--muted);font-weight:500;}
+.dip{
+  background:var(--or-p);border:1.5px solid var(--bdr);border-radius:7px;
+  padding:6px 10px;font-family:'Courier Prime',monospace;font-size:.83rem;
+  color:var(--text);outline:none;transition:.2s;
+}
+.dip:focus{border-color:var(--or);}
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{
+  background:var(--or-p);border:1px solid var(--or-m);color:var(--or-d);
+  font-size:.71rem;padding:4px 11px;border-radius:18px;cursor:pointer;transition:.13s;font-weight:500;
+}
+.chip:hover{background:var(--or-m);}
+#lbar{height:3px;background:linear-gradient(90deg,var(--or),#FFAA70,var(--or));background-size:200%;animation:shim 1s infinite;border-radius:2px;display:none;}
+#lbar.on{display:block;}
+@keyframes shim{0%{background-position:200%}100%{background-position:-200%}}
+#toast{padding:8px 14px;border-radius:8px;font-size:.8rem;font-weight:500;display:none;margin:0 24px 11px;align-items:center;gap:7px;}
+#toast.show{display:flex;}
+#toast.ok{background:#E6F7EE;color:#146B38;border:1px solid #90D8AE;}
+#toast.err{background:#FFF0EB;color:#B83A00;border:1px solid #F2B090;}
+
+/* TABLE CARD */
+.tcard{background:#fff;border-radius:14px;box-shadow:0 14px 44px var(--shd);overflow:hidden;}
+.thead-bar{
+  background:var(--or);padding:13px 22px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+}
+.thead-left{font-family:'Playfair Display',serif;color:#fff;font-size:1rem;display:flex;align-items:center;gap:8px;}
+#cpill{background:rgba(255,255,255,.22);color:#fff;font-size:.65rem;font-weight:600;padding:2px 9px;border-radius:18px;}
+.tscroll{overflow-x:auto;}
+.tscroll::-webkit-scrollbar{height:4px;}
+.tscroll::-webkit-scrollbar-thumb{background:var(--or-m);border-radius:3px;}
+
+table{width:100%;border-collapse:collapse;min-width:980px;}
+thead tr{background:var(--or-p);}
+th{
+  font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--or-d);padding:10px 11px;text-align:left;
+  border-bottom:2px solid var(--bdr);white-space:nowrap;
+}
+th.r{text-align:right;}th.c{text-align:center;}
+tbody tr{border-bottom:1px solid var(--or-p);transition:background .1s;}
+tbody tr:hover{background:#FFFBF8;}
+td{padding:0;vertical-align:middle;}
+.cell{
+  width:100%;min-height:42px;padding:9px 10px;
+  background:transparent;border:none;outline:none;
+  font-family:'DM Sans',sans-serif;font-size:.84rem;color:var(--text);
+  line-height:1.4;
+}
+.cell:focus{background:var(--or-p);}
+.cfolio{text-align:center;font-family:'Courier Prime',monospace;font-weight:700;font-size:.8rem;}
+.camt{text-align:right;font-family:'Courier Prime',monospace;font-weight:700;font-size:.85rem;}
+.camt.dr{color:var(--red2);}
+.camt.cr{color:var(--green);}
+.dbtn{
+  display:block;margin:auto;background:none;border:none;cursor:pointer;
+  color:#D4906A;font-size:.88rem;padding:5px 7px;border-radius:5px;transition:.13s;
+}
+.dbtn:hover{background:#FFF0EB;color:var(--or-d);}
+
+/* totals */
+tfoot tr{background:var(--or);}
+tfoot td{padding:11px 11px;font-weight:700;font-size:.85rem;color:#fff;border:none;}
+.tdr,.tcr{text-align:right;font-family:'Courier Prime',monospace;font-size:.9rem;}
+.bok{color:#C0FFD8;font-size:.67rem;margin-left:7px;}
+.berr{color:#FFD0B8;font-size:.67rem;margin-left:7px;}
+
+/* empty */
+.empty{text-align:center;padding:46px 20px;color:#D4A07A;}
+.eico{font-size:2rem;margin-bottom:9px;opacity:.45;}
+.empty p{font-size:.87rem;font-style:italic;line-height:1.8;}
+
+/* ACTION BAR */
+.abar{
+  background:#fff;border-top:2px solid var(--or-b);padding:14px 22px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.aleft{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{
+  padding:9px 18px;border:none;border-radius:9px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;
+  display:flex;align-items:center;gap:6px;transition:.16s;
+}
+.btn-add{background:var(--or-p);color:var(--or-d);border:1.5px solid var(--or-m);}
+.btn-add:hover{background:var(--or-m);}
+.btn-clr{background:#FFF0EB;color:#B83A00;border:1.5px solid #F2C0A8;}
+.btn-clr:hover{background:#FFE4D8;}
+.btn-csv{background:#E6F7EE;color:#146B38;border:1.5px solid #90D8AE;}
+.btn-csv:hover{background:#ccf0dd;}
+.btn-sub{
+  background:var(--or);color:#fff;
+  box-shadow:0 4px 13px rgba(232,93,4,.38);padding:10px 24px;font-size:.87rem;
+}
+.btn-sub:hover{background:var(--or-d);transform:translateY(-1px);}
+.btn-sub:disabled{background:#ccc;box-shadow:none;transform:none;cursor:not-allowed;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .7s linear infinite;display:inline-block;}
+@keyframes rowIn{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
+.row-new{animation:rowIn .22s ease both;}
+
+/* SUCCESS MODAL */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;backdrop-filter:blur(4px);
+}
+.modal-box{
+  background:#fff;border-radius:18px;padding:36px 40px;text-align:center;
+  box-shadow:0 22px 70px rgba(0,0,0,.22);max-width:340px;width:88%;
+  animation:popIn .22s ease;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:scale(1);}}
+.modal-ico{font-size:2.8rem;margin-bottom:12px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--text);margin-bottom:8px;font-weight:700;}
+.modal-msg{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:22px;}
+.modal-ok{
+  background:var(--or);color:#fff;border:none;border-radius:9px;
+  padding:10px 30px;font-size:.88rem;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;box-shadow:0 4px 13px rgba(232,93,4,.38);transition:.15s;
+}
+.modal-ok:hover{background:var(--or-d);}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📒 Journal Entry Register</h1>
+    <p>Type narration — entry fills automatically • works offline</p>
+  </div>
+  <span class="hbadge">Offline Ready</span>
+</header>
+
+<div class="wrap">
+
+  <!-- NARRATION INPUT -->
+  <div class="ncard">
+    <div class="ntop">
+      <div class="ntitle">Enter Narration</div>
+      <div class="nrow">
+        <textarea id="narrBox" rows="2"
+          placeholder="e.g. Goods purchased for cash ₹15,000  •  Rent paid by cheque ₹8,500  •  Capital introduced ₹1,00,000"></textarea>
+        <button id="goBtn" onclick="addEntry()" title="Add Entry (Enter)">➤</button>
+      </div>
+      <div id="lbar"></div>
+    </div>
+    <div class="meta">
+      <span class="mlbl">📅 Date:</span>
+      <input type="date" class="dip" id="entryDate"/>
+      <span class="mlbl" style="margin-left:6px;">Quick:</span>
+      <div class="chips">
+        <span class="chip" onclick="sx(this)" data-v="Goods purchased for cash ₹25,000">Cash Purchase</span>
+        <span class="chip" onclick="sx(this)" data-v="Goods sold on credit to Ram ₹18,000">Credit Sale</span>
+        <span class="chip" onclick="sx(this)" data-v="Rent paid by cheque ₹12,000">Rent</span>
+        <span class="chip" onclick="sx(this)" data-v="Capital introduced by owner in cash ₹1,00,000">Capital</span>
+        <span class="chip" onclick="sx(this)" data-v="Salary paid in cash ₹45,000">Salary</span>
+        <span class="chip" onclick="sx(this)" data-v="Loan taken from bank ₹2,00,000">Bank Loan</span>
+        <span class="chip" onclick="sx(this)" data-v="Depreciation charged on machinery ₹5,000">Depreciation</span>
+        <span class="chip" onclick="sx(this)" data-v="Cash deposited in bank ₹30,000">Bank Deposit</span>
+      </div>
+    </div>
+    <div id="toast"></div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="tcard">
+    <div class="thead-bar">
+      <div class="thead-left">📒 Journal Ledger <span id="cpill">0 Entries</span></div>
+    </div>
+    <div class="tscroll">
+      <table>
+        <colgroup>
+          <col style="width:100px"/><col style="width:160px"/><col style="width:160px"/>
+          <col style="width:55px"/><col style="width:110px"/><col style="width:110px"/>
+          <col style="min-width:170px"/><col style="width:105px"/><col style="width:105px"/>
+          <col style="width:38px"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Dr. Particulars</th>
+            <th>Cr. Particulars</th>
+            <th class="c">Folio</th>
+            <th class="r">Dr. Amount (₹)</th>
+            <th class="r">Cr. Amount (₹)</th>
+            <th>Narration</th>
+            <th>Dr. Ac. Type</th>
+            <th>Cr. Ac. Type</th>
+            <th class="c">Del</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot id="tfoot" style="display:none;">
+          <tr>
+            <td colspan="4" style="font-family:'Playfair Display',serif;">
+              Total <span id="balSt" class="bok"></span>
+            </td>
+            <td class="tdr" id="totDr">₹0.00</td>
+            <td class="tcr" id="totCr">₹0.00</td>
+            <td colspan="4"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="abar">
+      <div class="aleft">
+        <button class="btn btn-add" onclick="addBlank()">＋ Add Row</button>
+        <button class="btn btn-clr" onclick="clearAll()">✕ Clear All</button>
+        <button class="btn btn-csv" onclick="downloadCSV()">📥 Download CSV</button>
+      </div>
+      <button class="btn btn-sub" id="subBtn" onclick="submitSheet()">
+        <span id="subIco">☁</span> Submit to Google Sheet
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- hidden iframe for form submit -->
+<iframe name="hiddenFrame" id="hiddenFrame" style="display:none;"></iframe>
+
+<script>
+const SHEET_URL='https://script.google.com/macros/s/AKfycbyYslcM3lHV02vqdX17sIEEaviEGpayV2uIXRSqAYb613Gl4_S_8hnlQ4_qcegtZw/exec';
+
+let rows=[];
+try{rows=JSON.parse(localStorage.getItem('je_v5')||'[]');}catch(e){}
+
+const DRT=['','Asset','Expense','Loss','Drawing'];
+const CRT=['','Liability','Income','Capital','Gain','Revenue'];
+
+// ── INIT ─────────────────────────────────────
+document.getElementById('entryDate').value=new Date().toISOString().split('T')[0];
+render();
+
+function sx(el){document.getElementById('narrBox').value=el.dataset.v;document.getElementById('narrBox').focus();}
+
+// ── RULE-BASED PARSER ────────────────────────
+function parse(narr){
+  const t=narr.toLowerCase();
+
+  function amt(s){
+    const c=s.replace(/,/g,'');
+    const m=c.match(/(?:rs\.?|₹)\s*(\d+(?:\.\d{1,2})?)/i)
+            ||c.match(/(\d+(?:\.\d{1,2})?)\s*(?:rupees?|rs)/i)
+            ||c.match(/\b(\d{4,}(?:\.\d{1,2})?)\b/)
+            ||c.match(/\b(\d{3,}(?:\.\d{1,2})?)\b/);
+    return m?parseFloat(m[1]):0;
+  }
+  const a=amt(narr);
+
+  const R=[
+    // CAPITAL
+    {w:/capital.*(bank|cheque)|through bank.*(capital)?|(bank|cheque).*(capital)/,dr:['Bank A/c','Asset'],cr:['Capital A/c','Capital'],n:'Being capital introduced through bank'},
+    {w:/capital|introduced|invested|proprietor|owner.*(cash|brought)/,dr:['Cash A/c','Asset'],cr:['Capital A/c','Capital'],n:'Being capital introduced by owner'},
+    // BANK
+    {w:/deposit.*(bank)|cash.*(deposit)|bank.*(deposit)/,dr:['Bank A/c','Asset'],cr:['Cash A/c','Asset'],n:'Being cash deposited in bank'},
+    {w:/withdraw.*(bank)|bank.*(withdraw)|drew.*(bank)/,dr:['Cash A/c','Asset'],cr:['Bank A/c','Asset'],n:'Being cash withdrawn from bank'},
+    // PURCHASE
+    {w:/purchas.*(cheque)|cheque.*(purchas)|bought.*(cheque)/,dr:['Purchase A/c','Expense'],cr:['Bank A/c','Asset'],n:'Being goods purchased by cheque'},
+    {w:/purchas.*(credit)|credit.*(purchas)|bought.*(credit)/,dr:['Purchase A/c','Expense'],cr:['Creditor A/c','Liability'],n:'Being goods purchased on credit'},
+    {w:/purchas|bought goods|goods bought/,dr:['Purchase A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being goods purchased for cash'},
+    // SALES
+    {w:/sold.*(credit)|credit.*(sold)|sales.*(credit)|credit.*(sales)/,dr:['Debtor A/c','Asset'],cr:['Sales A/c','Revenue'],n:'Being goods sold on credit'},
+    {w:/sold|sales/,dr:['Cash A/c','Asset'],cr:['Sales A/c','Revenue'],n:'Being goods sold for cash'},
+    // RENT
+    {w:/rent.*(cheque)|cheque.*(rent)/,dr:['Rent A/c','Expense'],cr:['Bank A/c','Asset'],n:'Being rent paid by cheque'},
+    {w:/rent received/,dr:['Cash A/c','Asset'],cr:['Rent A/c','Income'],n:'Being rent received'},
+    {w:/rent/,dr:['Rent A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being rent paid in cash'},
+    // SALARY / WAGES
+    {w:/salary.*(cheque)|wages.*(cheque)/,dr:['Salary A/c','Expense'],cr:['Bank A/c','Asset'],n:'Being salary paid by cheque'},
+    {w:/salary|salaries|wages/,dr:['Salary A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being salary paid in cash'},
+    // LOAN
+    {w:/loan.*(repaid|paid)|repaid.*(loan)/,dr:['Loan A/c','Liability'],cr:['Cash A/c','Asset'],n:'Being loan repaid'},
+    {w:/loan.*(bank)|bank.*(loan)/,dr:['Bank A/c','Asset'],cr:['Loan A/c','Liability'],n:'Being loan taken from bank'},
+    {w:/loan/,dr:['Cash A/c','Asset'],cr:['Loan A/c','Liability'],n:'Being loan taken'},
+    // DEPRECIATION
+    {w:/depreciation.*(machinery|machine)/,dr:['Depreciation A/c','Expense'],cr:['Machinery A/c','Asset'],n:'Being depreciation on machinery'},
+    {w:/depreciation.*(furniture)/,dr:['Depreciation A/c','Expense'],cr:['Furniture A/c','Asset'],n:'Being depreciation on furniture'},
+    {w:/depreciation.*(vehicle|car)/,dr:['Depreciation A/c','Expense'],cr:['Vehicle A/c','Asset'],n:'Being depreciation on vehicle'},
+    {w:/depreciation/,dr:['Depreciation A/c','Expense'],cr:['Asset A/c','Asset'],n:'Being depreciation charged'},
+    // ELECTRICITY / BILLS
+    {w:/electricity|electric bill|power bill/,dr:['Electricity A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being electricity bill paid'},
+    {w:/telephone|phone bill|internet bill/,dr:['Telephone A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being telephone bill paid'},
+    // INSURANCE
+    {w:/insurance/,dr:['Insurance A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being insurance premium paid'},
+    // COMMISSION
+    {w:/commission received/,dr:['Cash A/c','Asset'],cr:['Commission A/c','Income'],n:'Being commission received'},
+    {w:/commission/,dr:['Commission A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being commission paid'},
+    // INTEREST
+    {w:/interest received/,dr:['Cash A/c','Asset'],cr:['Interest A/c','Income'],n:'Being interest received'},
+    {w:/interest/,dr:['Interest A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being interest paid'},
+    // DRAWINGS
+    {w:/drawing|drew.*personal|personal use|withdrawn.*personal/,dr:['Drawings A/c','Drawing'],cr:['Cash A/c','Asset'],n:'Being cash withdrawn for personal use'},
+    // ASSETS PURCHASED
+    {w:/machinery|machine.*purchased|purchased.*machine/,dr:['Machinery A/c','Asset'],cr:['Cash A/c','Asset'],n:'Being machinery purchased'},
+    {w:/furniture.*purchased|purchased.*furniture/,dr:['Furniture A/c','Asset'],cr:['Cash A/c','Asset'],n:'Being furniture purchased'},
+    {w:/vehicle.*purchased|car.*purchased/,dr:['Vehicle A/c','Asset'],cr:['Cash A/c','Asset'],n:'Being vehicle purchased'},
+    {w:/computer.*purchased|laptop.*purchased/,dr:['Computer A/c','Asset'],cr:['Cash A/c','Asset'],n:'Being computer purchased'},
+    // BAD DEBTS
+    {w:/bad debt/,dr:['Bad Debts A/c','Loss'],cr:['Debtor A/c','Asset'],n:'Being bad debts written off'},
+    // DISCOUNT
+    {w:/discount allowed/,dr:['Discount A/c','Expense'],cr:['Cash A/c','Asset'],n:'Being discount allowed'},
+    {w:/discount received/,dr:['Cash A/c','Asset'],cr:['Discount A/c','Income'],n:'Being discount received'},
+    // CASH RECEIVED
+    {w:/cash received|received.*cash|received from/,dr:['Cash A/c','Asset'],cr:['Debtor A/c','Asset'],n:'Being cash received'},
+    {w:/cash paid|paid.*cash/,dr:['Creditor A/c','Liability'],cr:['Cash A/c','Asset'],n:'Being cash paid'},
+  ];
+
+  for(const r of R){
+    if(r.w.test(t)){
+      return{drpart:r.dr[0],dractype:r.dr[1],crpart:r.cr[0],cractype:r.cr[1],dramt:a,cramt:a,narr:r.n};
+    }
+  }
+  return{drpart:'',dractype:'',crpart:'',cractype:'',dramt:a,cramt:a,narr:'Being '+narr.toLowerCase()};
+}
+
+// ── ADD FROM NARRATION ────────────────────────
+function addEntry(){
+  const narr=document.getElementById('narrBox').value.trim();
+  if(!narr){toast('Please enter a narration!','err');return;}
+  document.getElementById('lbar').classList.add('on');
+  setTimeout(()=>{
+    const p=parse(narr);
+    rows.push({id:Date.now(),date:document.getElementById('entryDate').value,...p});
+    save();render();
+    document.getElementById('narrBox').value='';
+    document.getElementById('lbar').classList.remove('on');
+    toast('✓ Entry added!','ok');
+  },180);
+}
+
+// ── ADD BLANK ROW ─────────────────────────────
+function addBlank(){
+  rows.push({id:Date.now(),date:document.getElementById('entryDate').value,
+    drpart:'',crpart:'',folio:'—',dramt:0,cramt:0,narr:'',dractype:'',cractype:''});
+  save();render();
+  setTimeout(()=>{const i=document.querySelectorAll('tbody tr:last-of-type .cell');if(i[0])i[0].focus();},50);
+}
+
+// ── RENDER ────────────────────────────────────
+function render(){
+  const tb=document.getElementById('tbody');
+  const tf=document.getElementById('tfoot');
+  const cp=document.getElementById('cpill');
+  if(!rows.length){
+    tb.innerHTML=`<tr><td colspan="10"><div class="empty"><div class="eico">📝</div><p>Type narration above and press ➤<br/>Entry will fill automatically — works offline!</p></div></td></tr>`;
+    tf.style.display='none';cp.textContent='0 Entries';return;
+  }
+  let html='',td=0,tc=0;
+  rows.forEach((r,i)=>{
+    td+=r.dramt||0;tc+=r.cramt||0;
+    const bg=i%2?'style="background:#FFFBF8"':'';
+    html+=`<tr ${bg} data-id="${r.id}"${i===rows.length-1?' class="row-new"':''}>
+      <td><input class="cell" type="date" value="${r.date||''}" onchange="u(${r.id},'date',this.value)"/></td>
+      <td><input class="cell" type="text" value="${esc(r.drpart)}" placeholder="Dr. Account A/c" onchange="u(${r.id},'drpart',this.value)"/></td>
+      <td><input class="cell" type="text" value="${esc(r.crpart)}" placeholder="Cr. Account A/c" onchange="u(${r.id},'crpart',this.value)"/></td>
+      <td><input class="cell cfolio" type="text" value="${esc(r.folio||'—')}" onchange="u(${r.id},'folio',this.value)"/></td>
+      <td><input class="cell camt dr" type="number" value="${r.dramt||''}" min="0" step="0.01" placeholder="0.00" onchange="u(${r.id},'dramt',parseFloat(this.value)||0);reCalc()"/></td>
+      <td><input class="cell camt cr" type="number" value="${r.cramt||''}" min="0" step="0.01" placeholder="0.00" onchange="u(${r.id},'cramt',parseFloat(this.value)||0);reCalc()"/></td>
+      <td><input class="cell" type="text" value="${esc(r.narr)}" placeholder="Being..." onchange="u(${r.id},'narr',this.value)"/></td>
+      <td><select class="cell" style="color:var(--red2)" onchange="u(${r.id},'dractype',this.value)">
+        ${DRT.map(t=>`<option value="${t}"${t===r.dractype?' selected':''}>${t||'— Select —'}</option>`).join('')}
+      </select></td>
+      <td><select class="cell" style="color:var(--green)" onchange="u(${r.id},'cractype',this.value)">
+        ${CRT.map(t=>`<option value="${t}"${t===r.cractype?' selected':''}>${t||'— Select —'}</option>`).join('')}
+      </select></td>
+      <td><button class="dbtn" onclick="del(${r.id})">✕</button></td>
+    </tr>`;
+  });
+  tb.innerHTML=html;tf.style.display='';
+  cp.textContent=`${rows.length} ${rows.length===1?'Entry':'Entries'}`;
+  setTotals(td,tc);
+}
+function reCalc(){let d=0,c=0;rows.forEach(r=>{d+=r.dramt||0;c+=r.cramt||0;});setTotals(d,c);}
+function setTotals(d,c){
+  document.getElementById('totDr').textContent='₹'+fmt(d);
+  document.getElementById('totCr').textContent='₹'+fmt(c);
+  const df=Math.abs(d-c),bs=document.getElementById('balSt');
+  bs.textContent=df<.01?'✓ Balanced':'✕ Diff: ₹'+fmt(df);
+  bs.className=df<.01?'bok':'berr';
+}
+function u(id,k,v){const r=rows.find(r=>r.id===id);if(r){r[k]=v;save();}}
+function del(id){rows=rows.filter(r=>r.id!==id);save();render();}
+function clearAll(){
+  if(!rows.length){toast('No entries!','err');return;}
+  if(!confirm('Delete all entries?'))return;
+  rows=[];save();render();
+}
+function save(){localStorage.setItem('je_v5',JSON.stringify(rows));}
+
+// ── CSV DOWNLOAD ──────────────────────────────
+function downloadCSV(){
+  if(!rows.length){toast('Add entries first!','err');return;}
+  const BOM='\uFEFF';
+  const Q=v=>`"${String(v).replace(/"/g,'""')}"`;
+  const SEP=',';
+  const head=['Date','Dr. Particulars','Cr. Particulars','Folio','Dr. Amount','Cr. Amount','Narration','Dr. Ac. Type','Cr. Ac. Type'];
+  const body=rows.map(r=>[fmtD(r.date),r.drpart,r.crpart,r.folio||'—',r.dramt||0,r.cramt||0,r.narr,r.dractype,r.cractype].map(Q).join(SEP));
+  const td=rows.reduce((s,r)=>s+(r.dramt||0),0);
+  const tc=rows.reduce((s,r)=>s+(r.cramt||0),0);
+  body.push('');
+  body.push([Q('TOTAL'),'','',Q(''),Q(fmt(td)),Q(fmt(tc)),Q(Math.abs(td-tc)<.01?'BALANCED ✓':'NOT BALANCED'),'',''].join(SEP));
+  const csv=BOM+[head.map(Q).join(SEP),...body].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='Journal_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  toast('✅ CSV downloaded! Open in Excel.','ok');
+}
+
+// ── SUBMIT TO GOOGLE SHEET ────────────────────
+// Sends each row one by one as individual form POST
+// Each row = separate form submission to Apps Script
+// This is the most reliable method — works on phone + local file
+
+let _submitQueue=[];
+let _submitIndex=0;
+
+function submitSheet(){
+  if(!rows.length){toast('Add entries first!','err');return;}
+  const btn=document.getElementById('subBtn');
+  const ico=document.getElementById('subIco');
+  btn.disabled=true;ico.className='spin';ico.textContent='↻';
+
+  _submitQueue=[...rows];
+  _submitIndex=0;
+  submitNext();
+}
+
+function submitNext(){
+  if(_submitIndex>=_submitQueue.length){
+    // All rows done
+    document.getElementById('subBtn').disabled=false;
+    document.getElementById('subIco').className='';
+    document.getElementById('subIco').textContent='☁';
+    showModal();
+    return;
+  }
+
+  const r=_submitQueue[_submitIndex];
+
+  // Remove old form
+  let old=document.getElementById('_hf');if(old)old.remove();
+
+  // Build form with individual fields (Apps Script reads e.parameter.fieldname)
+  const form=document.createElement('form');
+  form.id='_hf';
+  form.method='POST';
+  form.action=SHEET_URL;
+  form.target='hiddenFrame';
+  form.style.display='none';
+
+  const fields={
+    date:     fmtD(r.date),
+    drpart:   r.drpart   ||'',
+    crpart:   r.crpart   ||'',
+    folio:    r.folio    ||'—',
+    dramt:    String(r.dramt  ||0),
+    cramt:    String(r.cramt  ||0),
+    narr:     r.narr     ||'',
+    dractype: r.dractype ||'',
+    cractype: r.cractype ||''
+  };
+
+  Object.keys(fields).forEach(k=>{
+    const inp=document.createElement('input');
+    inp.type='hidden';inp.name=k;inp.value=fields[k];
+    form.appendChild(inp);
+  });
+
+  document.body.appendChild(form);
+
+  // When iframe loads = this row was received
+  const frame=document.getElementById('hiddenFrame');
+  frame.onload=function(){
+    frame.onload=null;
+    if(form.parentNode)form.remove();
+    _submitIndex++;
+    setTimeout(submitNext,300); // small delay between rows
+  };
+
+  // Timeout per row = 8s
+  setTimeout(()=>{
+    if(_submitIndex<_submitQueue.length&&form.parentNode){
+      frame.onload=null;form.remove();
+      _submitIndex++;
+      submitNext();
+    }
+  },8000);
+
+  form.submit();
+}
+
+// ── SUCCESS MODAL ─────────────────────────────
+function showModal(){
+  let old=document.getElementById('_modal');if(old)old.remove();
+  const d=document.createElement('div');d.id='_modal';d.className='modal-bg';
+  d.innerHTML=`<div class="modal-box">
+    <div class="modal-ico">✅</div>
+    <div class="modal-title">Entry Submitted!</div>
+    <div class="modal-msg">Your entry has been submitted<br/>successfully to Google Sheet.</div>
+    <button class="modal-ok" onclick="document.getElementById('_modal').remove()">OK</button>
+  </div>`;
+  document.body.appendChild(d);
+  setTimeout(()=>{if(d.parentNode)d.remove();},5000);
+}
+
+// ── HELPERS ──────────────────────────────────
+function fmtD(d){if(!d)return'—';const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}
+function fmt(n){return Number(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className=`show ${type}`;setTimeout(()=>t.className='',3500);}
+function hideToast(){document.getElementById('toast').className='';}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&document.activeElement===document.getElementById('narrBox')){e.preventDefault();addEntry();}});
+</script>
+</body>
+</html>
